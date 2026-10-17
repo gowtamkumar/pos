@@ -110,9 +110,9 @@ erDiagram
 
 ## 4. Module Documentation Directory
 
-Detailed architectural and API guides for each core module:
 - 📖 [User & Authentication Module Documentation](file:///media/gowtamkumar/ba015ba5-d67a-4dd3-a76f-71a0b397e4042/projects/pos/doc/USER_MODULE.md) — RBAC, Bcrypt security, JWT authentication, and endpoints.
-- 📖 Category & Product Catalog Module *(coming next)*
+- 📖 [Category Module Documentation](file:///media/gowtamkumar/ba015ba5-d67a-4dd3-a76f-71a0b397e4042/projects/pos/doc/CATEGORY_MODULE.md) — Retail departments, auto-slugification, POS quick active tabs, and CRUD.
+- 📖 Product Catalog & Inventory Module *(coming next)*
 - 📖 Sales & Cash Checkout Ledger *(coming next)*
 
 ---
