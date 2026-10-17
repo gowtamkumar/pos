@@ -259,6 +259,7 @@ All endpoints are prefixed with `/api/v1`. Live interactive testing is available
 - 📘 [User & Auth Module Documentation](doc/USER_MODULE.md) — Authentication flow, password policies, user CRUD & 10 automated test suites.
 - 📁 [Category Module Documentation](doc/CATEGORY_MODULE.md) — Category department hierarchy, auto-slugification, RBAC & test suites.
 - 📦 [Product Module Documentation](doc/PRODUCT_MODULE.md) — Direct product architecture, instant barcode scanning, low-stock alerts, atomic stock adjustments & test suites.
+- 💳 [Sale & Cash Checkout Module Documentation](doc/SALE_MODULE.md) — Atomic checkout transactions, cash change calculation, line-item snapshots & 12 test suites.
 
 ---
 
@@ -285,18 +286,20 @@ As required by the practical assessment specifications, this application include
 
 When reviewing the code or performing live modifications during technical review:
 
-### 1. Concurrency Control on Variant Inventory
+### 1. Concurrency Control on Inventory (Pessimistic Row Locking)
 - **Problem:** Two cashiers scanning the last item simultaneously could result in negative stock.
-- **Solution:** We use TypeORM's `EntityManager.transaction()` with atomic conditional decrement:
-  ```sql
-  UPDATE products
-  SET stock_quantity = stock_quantity - :qty
-  WHERE id = :id AND stock_quantity >= :qty;
+- **Solution:** We use database-level pessimistic locking (`SELECT ... FOR UPDATE`) inside an isolated TypeORM transaction:
+  ```ts
+  const product = await manager
+    .createQueryBuilder(ProductEntity, 'product')
+    .setLock('pessimistic_write')
+    .where('product.id = :id', { id: productId })
+    .getOne();
   ```
-  If zero rows are updated, the transaction automatically rolls back and returns an `INSUFFICIENT_STOCK` HTTP 400 error.
+  If available stock is lower than requested quantity, the transaction immediately rolls back with an informative `400 Bad Request` before altering any state.
 
 ### 2. Financial Ledger Immutability
-- Line items are stored as independent static snapshots in `sale_items` at the moment of sale (`unit_price`, `unit_cost`, `product_name`).
+- Line items are stored as independent static snapshots in `sale_items` at the moment of sale (`unit_price`, `unit_cost`, `product_name`, `product_sku`).
 - Future edits to product names or catalog prices will never corrupt historical receipts or accounting totals.
 
 ---
@@ -319,5 +322,6 @@ npm test
 - [x] User Module verified with 10 automated end-to-end tests ([USER_MODULE.md](doc/USER_MODULE.md)).
 - [x] Category Module verified with 9 automated end-to-end tests ([CATEGORY_MODULE.md](doc/CATEGORY_MODULE.md)).
 - [x] Product Module verified with 10 automated end-to-end tests ([PRODUCT_MODULE.md](doc/PRODUCT_MODULE.md)).
+- [x] Sale & Cash Checkout Module verified with 12 automated end-to-end tests ([SALE_MODULE.md](doc/SALE_MODULE.md)).
 - [x] Client login page connected to backend auth with role redirection.
 - [x] Ready to run locally with 1-command Docker Compose (`docker compose -f docker-compose.dev.yml up -d`).
