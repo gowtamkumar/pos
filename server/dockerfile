@@ -1,0 +1,24 @@
+# Use official Node.js 20 image
+FROM node:24-alpine
+
+
+# Install PostgreSQL client tools (includes pg_dump)
+RUN apk add --no-cache postgresql-client
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files first
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Expose the backend port
+EXPOSE 3900
+
+# Start development server
+CMD ["npm", "run", "start:dev"]

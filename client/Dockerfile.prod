@@ -1,0 +1,17 @@
+# production build stage
+FROM node:24-alpine as builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# serve static build
+FROM node:24-alpine
+RUN npm install -g http-server
+WORKDIR /app
+COPY --from=builder /app/build ./build
+
+EXPOSE 3300
+CMD ["http-server", "build", "-p", "3300"]

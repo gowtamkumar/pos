@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: pos_dev_postgres_db
+    # restart: always
+    environment:
+      POSTGRES_USER: pos
+      POSTGRES_PASSWORD: pos@
+      POSTGRES_DB: pos
+      TZ: "GMT"
+      PGTZ: "GMT"
+    ports:
+      - "5543:5432" # external:internal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - main_network
+
+  pgadmin:
+    container_name: pos_dev_pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=gowtam.semicolonit@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=pos@
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - main_network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: pos_dev_server_app
+    env_file:
+      - ./server/.env.development
+    ports:
+      - "3900:3900" # API port
+      - "4900:4900" # Debug port
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+    networks:
+      - main_network
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: pos_dev_client_app
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./client/.env.local
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - main_network
+
+networks:
+  main_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:

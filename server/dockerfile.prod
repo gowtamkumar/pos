@@ -1,0 +1,28 @@
+# Stage 1: Build
+FROM node:24-alpine AS builder
+
+# Install PostgreSQL client tools for backup support
+RUN apk update && apk add --no-cache bash postgresql-client
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# Stage 2: Run
+FROM node:24-alpine
+
+# ✅ You need pg_dump here too!
+RUN apk add --no-cache postgresql-client
+
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+# EXPOSE 4400
+
+CMD ["node", "dist/main"]
+

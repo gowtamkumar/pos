@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
+:root,
+[data-theme='dark'],
+.dark {
+  --background: #0b0f19;
+  --foreground: #f8fafc;
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --card: #111827;
+  --card-border: #1f2937;
+  --muted: #1e293b;
+  --muted-foreground: #9ca3af;
+  --surface-hover: #1f2937;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --font-sans: 'Outfit', 'Inter', sans-serif;
+  color-scheme: dark;
+}
+
+[data-theme='light'],
+.light {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --card: #ffffff;
+  --card-border: #e2e8f0;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --surface-hover: #f1f5f9;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-card: var(--card);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-surface-hover: var(--surface-hover);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode core surface & typography contrast mappings */
+[data-theme='light'] h1,
+[data-theme='light'] h2,
+[data-theme='light'] h3,
+[data-theme='light'] h4,
+[data-theme='light'] h5,
+[data-theme='light'] h6 {
+  color: #0f172a;
+}
+
+[data-theme='light'] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme='light'] select,
+[data-theme='light'] textarea {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+[data-theme='light'] input::placeholder,
+[data-theme='light'] textarea::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme='light'] thead {
+  background-color: #f8fafc;
+  color: #475569;
+}
+
+[data-theme='light'] thead th {
+  color: #475569;
+}
+
+[data-theme='light'] tbody tr {
+  border-color: #f1f5f9;
+}
+
+[data-theme='light'] tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+[data-theme='light'] table td {
+  color: #1e293b;
+}
+
+/* Light mode fallback mappings for legacy dark slate classes */
+[data-theme='light'] .text-slate-100:not([class*="bg-primary"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-amber"]):not([class*="bg-indigo"]):not([class*="bg-[#"]):not(.text-white),
+[data-theme='light'] .text-slate-200:not([class*="bg-primary"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-amber"]):not([class*="bg-indigo"]):not([class*="bg-[#"]):not(.text-white) {
+  color: #0f172a;
+}
+
+[data-theme='light'] .text-slate-300:not([class*="bg-primary"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-amber"]):not([class*="bg-indigo"]):not([class*="bg-[#"]):not(.text-white),
+[data-theme='light'] .text-slate-400:not([class*="bg-primary"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-amber"]):not([class*="bg-indigo"]):not([class*="bg-[#"]):not(.text-white) {
+  color: #475569;
+}
+
+[data-theme='light'] .text-slate-500 {
+  color: #64748b;
+}
+
+[data-theme='light'] .bg-slate-950,
+[data-theme='light'] .bg-slate-950\/20,
+[data-theme='light'] .bg-slate-950\/30,
+[data-theme='light'] .bg-slate-950\/40,
+[data-theme='light'] .bg-slate-950\/50,
+[data-theme='light'] .bg-slate-950\/60,
+[data-theme='light'] .bg-slate-900 {
+  background-color: #f8fafc;
+}
+
+[data-theme='light'] .border-card-border\/40,
+[data-theme='light'] .border-card-border\/50,
+[data-theme='light'] .border-card-border\/60,
+[data-theme='light'] .border-card-border\/70,
+[data-theme='light'] .border-card-border\/80 {
+  border-color: #e2e8f0;
+}
+
+
