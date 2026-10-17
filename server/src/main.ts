@@ -72,34 +72,39 @@ async function bootstrap() {
   app.use(cookieParser())
   app.use(json({ limit: '20mb' }))
   // ── Tiered rate limiting ─────────────────────────────────────────────────
-  // 1. Strict: Auth endpoints (login, register) — 10 req / 15 min per IP
+  const isDev = process.env.NODE_ENV !== 'production'
+
+  // 1. Auth endpoints (login, register)
   app.use(
     '/api/v1/auth',
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 10,
+      max: isDev ? 500 : 30,
       message: 'Too many auth attempts, please try again in 15 minutes',
     }),
   )
 
-  // 2. Standard: All other authenticated API calls — 200 req / 15 min per IP
+  // 2. Standard API calls
   app.use(
     '/api/v1',
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 200,
+      max: isDev ? 2000 : 500,
       message: 'Too many requests from this IP, please try again later',
-      skip: (req) => req.path.startsWith('/courses') || req.path.startsWith('/categories'),
+      skip: (req) =>
+        req.path.startsWith('/products') ||
+        req.path.startsWith('/categories') ||
+        req.path.startsWith('/sales'),
     }),
   )
 
-  // 3. Relaxed: Public read-only routes (course catalog, categories) — 500 req / 15 min
+  // 3. Relaxed: High-frequency POS terminal operations (barcode lookup, category browsing)
   app.use(
-    ['/api/v1/courses', '/api/v1/categories'],
+    ['/api/v1/products', '/api/v1/categories', '/api/v1/sales'],
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      max: 500,
-      message: 'Too many requests, please try again later',
+      max: isDev ? 10000 : 2000,
+      message: 'Too many POS requests, please try again later',
     }),
   )
   const PORT = process.env.API_PORT || 3900

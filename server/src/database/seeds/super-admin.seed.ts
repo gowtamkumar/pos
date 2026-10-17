@@ -8,6 +8,7 @@ import { UserEntity } from '../../modules/admin/user/entities/user.entity'
 import { UserRole } from '../../modules/admin/user/enums/user-role.enum'
 import { UserStatus } from '../../modules/admin/user/enums/user-status.enum'
 import { CategoryEntity } from '../../modules/category/entities/category.entity'
+import { ProductEntity } from '../../modules/product/entities/product.entity'
 
 type SeedUser = {
   name: string
@@ -22,6 +23,17 @@ type SeedCategory = {
   name: string
   slug: string
   description: string
+}
+
+type SeedProduct = {
+  name: string
+  categorySlug: string
+  sku: string
+  barcode: string
+  retailPrice: number
+  costPrice: number
+  stockQuantity: number
+  lowStockThreshold: number
 }
 
 async function upsertUser(
@@ -56,25 +68,60 @@ async function upsertUser(
 async function upsertCategory(
   categoryRepo: Repository<CategoryEntity>,
   data: SeedCategory,
-): Promise<'created' | 'skipped'> {
-  const existing = await categoryRepo.findOne({
+): Promise<CategoryEntity> {
+  let category = await categoryRepo.findOne({
     where: [{ name: data.name }, { slug: data.slug }],
   })
 
-  if (existing) {
+  if (category) {
     console.log(`⏭  Category "${data.name}" already exists — skipping.`)
-    return 'skipped'
+    return category
   }
 
-  const category = categoryRepo.create({
+  category = categoryRepo.create({
     name: data.name,
     slug: data.slug,
     description: data.description,
     isActive: true,
   })
 
-  await categoryRepo.save(category)
+  const saved = await categoryRepo.save(category)
   console.log(`✅  Seeded Category: ${data.name}`)
+  return saved
+}
+
+async function upsertProduct(
+  productRepo: Repository<ProductEntity>,
+  data: SeedProduct,
+  categoryMap: Map<string, CategoryEntity>,
+): Promise<'created' | 'skipped'> {
+  const existing = await productRepo.findOne({
+    where: [{ sku: data.sku }, { barcode: data.barcode }],
+  })
+
+  if (existing) {
+    console.log(`⏭  Product "${data.name}" (${data.sku}) already exists — skipping.`)
+    return 'skipped'
+  }
+
+  const category = categoryMap.get(data.categorySlug) || null
+
+  const product = productRepo.create({
+    name: data.name,
+    sku: data.sku,
+    barcode: data.barcode,
+    retailPrice: data.retailPrice,
+    costPrice: data.costPrice,
+    stockQuantity: data.stockQuantity,
+    lowStockThreshold: data.lowStockThreshold,
+    category,
+    isActive: true,
+  })
+
+  await productRepo.save(product)
+  console.log(
+    `✅  Seeded Product: ${data.name} [Barcode: ${data.barcode}, Stock: ${data.stockQuantity}]`,
+  )
   return 'created'
 }
 
@@ -101,6 +148,7 @@ async function seed() {
   const configService = app.get(ConfigService)
   const userRepo = app.get<Repository<UserEntity>>(getRepositoryToken(UserEntity))
   const categoryRepo = app.get<Repository<CategoryEntity>>(getRepositoryToken(CategoryEntity))
+  const productRepo = app.get<Repository<ProductEntity>>(getRepositoryToken(ProductEntity))
 
   const seedUsers: SeedUser[] = [
     {
@@ -148,14 +196,124 @@ async function seed() {
     },
   ]
 
+  const seedProducts: SeedProduct[] = [
+    {
+      name: 'Coca-Cola 500ml Can',
+      categorySlug: 'beverages',
+      sku: 'BEV-COCA-500',
+      barcode: '890103000001',
+      retailPrice: 45.0,
+      costPrice: 35.0,
+      stockQuantity: 80,
+      lowStockThreshold: 10,
+    },
+    {
+      name: 'Pepsi 500ml Bottle',
+      categorySlug: 'beverages',
+      sku: 'BEV-PEPSI-500',
+      barcode: '890103000002',
+      retailPrice: 45.0,
+      costPrice: 35.0,
+      stockQuantity: 60,
+      lowStockThreshold: 10,
+    },
+    {
+      name: 'Mineral Water 1L',
+      categorySlug: 'beverages',
+      sku: 'BEV-WATER-1000',
+      barcode: '890103000003',
+      retailPrice: 25.0,
+      costPrice: 18.0,
+      stockQuantity: 120,
+      lowStockThreshold: 15,
+    },
+    {
+      name: 'Lays Classic Salted 50g',
+      categorySlug: 'snacks-bakery',
+      sku: 'SNK-LAYS-50',
+      barcode: '890103000004',
+      retailPrice: 30.0,
+      costPrice: 22.0,
+      stockQuantity: 50,
+      lowStockThreshold: 10,
+    },
+    {
+      name: 'Oreo Chocolate Cookies 120g',
+      categorySlug: 'snacks-bakery',
+      sku: 'SNK-OREO-120',
+      barcode: '890103000005',
+      retailPrice: 55.0,
+      costPrice: 42.0,
+      stockQuantity: 40,
+      lowStockThreshold: 8,
+    },
+    {
+      name: 'Basmati Rice Premium 1kg',
+      categorySlug: 'grocery-staples',
+      sku: 'GRC-RICE-1KG',
+      barcode: '890103000006',
+      retailPrice: 180.0,
+      costPrice: 145.0,
+      stockQuantity: 30,
+      lowStockThreshold: 5,
+    },
+    {
+      name: 'Pure Sunflower Oil 1L',
+      categorySlug: 'grocery-staples',
+      sku: 'GRC-OIL-1L',
+      barcode: '890103000007',
+      retailPrice: 195.0,
+      costPrice: 165.0,
+      stockQuantity: 25,
+      lowStockThreshold: 5,
+    },
+    {
+      name: 'Fresh Whole Milk 1L',
+      categorySlug: 'dairy-eggs',
+      sku: 'DRY-MILK-1L',
+      barcode: '890103000008',
+      retailPrice: 90.0,
+      costPrice: 75.0,
+      stockQuantity: 4, // Intentionally low stock
+      lowStockThreshold: 10,
+    },
+    {
+      name: 'Farm Fresh Brown Eggs (Dozen)',
+      categorySlug: 'dairy-eggs',
+      sku: 'DRY-EGGS-12',
+      barcode: '890103000009',
+      retailPrice: 155.0,
+      costPrice: 130.0,
+      stockQuantity: 3, // Intentionally low stock
+      lowStockThreshold: 8,
+    },
+    {
+      name: 'Dove Deep Moisture Soap 100g',
+      categorySlug: 'personal-care',
+      sku: 'PRC-DOVE-100',
+      barcode: '890103000010',
+      retailPrice: 75.0,
+      costPrice: 58.0,
+      stockQuantity: 45,
+      lowStockThreshold: 10,
+    },
+  ]
+
   console.log('\n🌱  Seeding Admin and Cashier users for POS...')
   for (const user of seedUsers) {
     await upsertUser(userRepo, user)
   }
 
   console.log('\n🌱  Seeding Retail Categories for POS...')
+  const categoryMap = new Map<string, CategoryEntity>()
   for (const cat of seedCategories) {
-    await upsertCategory(categoryRepo, cat)
+    const saved = await upsertCategory(categoryRepo, cat)
+    categoryMap.set(saved.slug, saved)
+  }
+
+  console.log('\n🌱  Seeding Retail Products with Barcodes & Stock for POS...')
+  for (const prod of seedProducts) {
+    await upsertProduct(productRepo, prod, categoryMap)
   }
 
   printCredentials(seedUsers)

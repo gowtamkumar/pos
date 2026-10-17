@@ -255,6 +255,11 @@ All endpoints are prefixed with `/api/v1`. Live interactive testing is available
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/v1/ai/sales-insights` | Admin | Collects sales totals and low-stock items to generate Gemini-powered restock recommendations. |
 
+### Module Deep-Dive Documentation
+- 📘 [User & Auth Module Documentation](doc/USER_MODULE.md) — Authentication flow, password policies, user CRUD & 10 automated test suites.
+- 📁 [Category Module Documentation](doc/CATEGORY_MODULE.md) — Category department hierarchy, auto-slugification, RBAC & test suites.
+- 📦 [Product Module Documentation](doc/PRODUCT_MODULE.md) — Direct product architecture, instant barcode scanning, low-stock alerts, atomic stock adjustments & test suites.
+
 ---
 
 ## 8. AI / ML Feature Details (Assessment Criterion 5)
@@ -309,8 +314,10 @@ npm test
 ## 11. Verification Checklist
 
 - [x] Backend TypeORM Entities & PostgreSQL integration.
-- [x] Seed script populated with Admin (`admin@pos.local`) and Cashier (`cashier@pos.local`).
+- [x] Seed script populated with Admin (`admin@pos.local`), Cashier (`cashier@pos.local`), 5 categories, and 10 products with barcodes.
 - [x] JWT Authentication & Protected endpoints verified via Swagger & curl.
-- [x] User Module verified with 10 automated end-to-end tests.
+- [x] User Module verified with 10 automated end-to-end tests ([USER_MODULE.md](doc/USER_MODULE.md)).
+- [x] Category Module verified with 9 automated end-to-end tests ([CATEGORY_MODULE.md](doc/CATEGORY_MODULE.md)).
+- [x] Product Module verified with 10 automated end-to-end tests ([PRODUCT_MODULE.md](doc/PRODUCT_MODULE.md)).
 - [x] Client login page connected to backend auth with role redirection.
 - [x] Ready to run locally with 1-command Docker Compose (`docker compose -f docker-compose.dev.yml up -d`).

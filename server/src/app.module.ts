@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 import { DatabaseModule } from './database/database.module'
 import { AdminModule } from './modules/admin/admin.module'
 import { CategoryModule } from './modules/category/category.module'
+import { ProductModule } from './modules/product/product.module'
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CategoryModule } from './modules/category/category.module'
     DatabaseModule,
     AdminModule,
     CategoryModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [],
