@@ -65,10 +65,7 @@ export class UserController {
   @Roles(UserRole.Admin)
   @ApiOperation({ summary: 'Update user details and roles (Admin only)' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
-  async updateUser(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  async updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.userService.updateUser(id, updateUserDto)
     return { success: true, statusCode: 200, message: `User updated successfully`, data: user }
   }
