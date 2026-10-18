@@ -32,17 +32,23 @@ async function bootstrap() {
 
   // ── Swagger / OpenAPI Documentation Setup ─────────────────────────────────
   const swaggerConfig = new DocumentBuilder()
-    .setTitle('LMS Studio REST API')
+    .setTitle('Retail POS REST API')
     .setDescription(
-      'Full API documentation for Learning Management System platform endpoints, role-based controls, reports, and course player APIs.',
+      'Full API documentation for Retail Point of Sale (POS) system, featuring JWT authentication, role guards, product inventory, cash checkout engine, and AI sales insights.',
     )
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('Auth', 'User authentication, registration, password resets')
-    .addTag('Courses', 'Course catalog, syllabus, and module management')
-    .addTag('Reports', 'Role-specific live workspace dashboard reports')
-    .addTag('Certificates', 'PDF course completion certificate generation')
-    .addTag('Search', 'Global platform search across courses, categories, and instructors')
+    .addTag('Auth', 'User authentication, login, token refresh, and profile')
+    .addTag('Users', 'User administration and cashier credential management')
+    .addTag('Categories', 'Retail departments and catalog categorization')
+    .addTag(
+      'Products',
+      'Direct inventory catalog, pricing, barcode scanning, and stock adjustments',
+    )
+    .addTag(
+      'Sales & Checkout',
+      'Atomic cash checkout transactions, change calculation, and receipts',
+    )
     .build()
 
   const document = SwaggerModule.createDocument(app, swaggerConfig)
@@ -53,14 +59,7 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true)
-      if (
-        origin === allowedOrigin ||
-        origin === 'http://localhost:3001' ||
-        origin === 'http://localhost:3000' ||
-        origin.endsWith('.ngrok-free.dev') ||
-        origin.endsWith('.ngrok.app') ||
-        origin.endsWith('.ngrok.io')
-      ) {
+      if (origin === allowedOrigin) {
         return callback(null, true)
       }
       return callback(null, true)

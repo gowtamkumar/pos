@@ -107,28 +107,35 @@ sale_items (
 ### Day 1: 17 October 2026 (Backend, PostgreSQL & TypeORM Setup)
 
 #### [15:30 – 18:30] Phase 1: Environment, Database & TypeORM Entities
-- [ ] Create `docker-compose.yml` for local PostgreSQL (port 5432) + `.env.example`.
-- [ ] Initialize `backend/` with Express, TypeScript, TypeORM, and pg driver.
-- [ ] Configure `data-source.ts` connecting to PostgreSQL.
-- [ ] Implement Entities: `User`, `Category`, `Product`, `Sale`, `SaleItem`.
-- [ ] Write seed script `seed.ts` populating categories, users (Admin/Cashier), and sample retail products with barcodes.
+- [x] Create `docker-compose.dev.yml` for local PostgreSQL (mapped port 5543:5432) + `.env.example`.
+- [x] Initialize backend with NestJS, TypeScript, TypeORM, and PostgreSQL driver.
+- [x] Configure database provider connecting to PostgreSQL with synchronization.
+- [x] Implement Entities: `UserEntity`, `CategoryEntity`, `ProductEntity`, `SaleEntity`, `SaleItemEntity`.
+- [x] Write seed script `super-admin.seed.ts` populating categories, users (`admin@pos.local` / `cashier@pos.local`), and 10 sample retail products with barcodes.
 
 #### [18:30 – 21:00] Phase 2: Auth, Security & Product Management APIs
-- [ ] JWT authentication (`/api/auth/login`, `/api/auth/me`).
-- [ ] Zod schema validation middleware.
-- [ ] Product & Category APIs:
-  - `GET /api/products` (Search & category filter)
-  - `GET /api/products/barcode/:barcode` (Instant barcode scanner lookup)
-  - `POST /api/products`, `PUT /api/products/:id`, `DELETE /api/products/:id` (Admin only)
+- [x] JWT authentication (`/api/v1/auth/login`, `/api/v1/auth/me`, `/api/v1/auth/refresh`, `/api/v1/auth/logout`).
+- [x] Input validation with class-validator DTOs & global `ValidationPipe` (whitelist + transform).
+- [x] Role-Based Access Control (`RolesGuard` with `UserRole.Admin` and `UserRole.Cashier`).
+- [x] Product & Category APIs:
+  - [x] `GET /api/v1/products` (Search & category filter)
+  - [x] `GET /api/v1/products/barcode/:barcode` (Instant barcode scanner lookup)
+  - [x] `GET /api/v1/products/low-stock` (Restock threshold query)
+  - [x] `POST /api/v1/products`, `PUT /api/v1/products/:id`, `PATCH /api/v1/products/:id/stock`, `DELETE /api/v1/products/:id` (Admin only)
+  - [x] `GET /api/v1/categories`, `GET /api/v1/categories/active`, `POST`, `PUT`, `DELETE` (Admin only for mutations)
+- [x] Automated test suites verified (10/10 for User, 9/9 for Category, 10/10 for Product).
 
 #### [21:00 – 23:30] Phase 3: Cash Checkout Engine & Transactional Logic
-- [ ] `POST /api/sales/checkout` with TypeORM `transaction`:
-  - Verify stock availability.
-  - Atomic stock decrement (`stock_quantity = stock_quantity - qty`).
-  - Calculate `total` and `change_due = amount_tendered - total`.
-  - Validate `amount_tendered >= total`.
-  - Insert `Sale` and `SaleItems`.
-- [ ] `GET /api/sales` (Sales history and re-print receipts).
+- [x] `POST /api/v1/sales/checkout` with TypeORM `transaction`:
+  - [x] Verify stock availability with pessimistic row locking (`FOR UPDATE`).
+  - [x] Batch stock decrement without N+1 queries.
+  - [x] Calculate `total` and `changeDue = amountTendered - total`.
+  - [x] Validate `amountTendered >= total`.
+  - [x] Insert `Sale` and `SaleItems` with immutable price/cost/name snapshots.
+- [x] `GET /api/v1/sales` (Sales history and pagination).
+- [x] `GET /api/v1/sales/:id` & `GET /api/v1/sales/invoice/:invoiceNumber` (Full receipt itemization).
+- [x] `GET /api/v1/sales/summary/today` (Cash drawer daily reconciliation powered by Day.js).
+- [x] Automated test suites verified (12/12 test cases passed 100%).
 
 ---
 
