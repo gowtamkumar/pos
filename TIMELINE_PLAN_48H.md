@@ -141,24 +141,24 @@ sale_items (
 
 ### Day 2: 18 October 2026 (Frontend Terminal, AI Feature & Testing)
 
-#### [09:00 – 13:00] Phase 4: POS Terminal (React + Vite + Tailwind CSS)
-- [ ] Initialize `frontend/` with Vite, React, TypeScript, and Tailwind CSS.
-- [ ] Build POS Terminal UI:
-  - Header with cashier badge, live clock, and quick stats.
-  - Left panel: Category buttons, live search bar, and responsive product cards with stock badges.
-  - Right panel: Sticky Cart drawer with quantity adjusters (+ / -), discounts, and total breakdown.
-- [ ] Barcode Scanner listener (captures rapid keyboard inputs ending with `Enter`).
-- [ ] User Feedback: Skeleton loaders, empty states, out-of-stock disable indicators, error toasts.
+#### [09:00 – 13:00] Phase 4: POS Terminal (Next.js 16 + React 19 + Tailwind CSS)
+- [x] Configure Next.js frontend with Tailwind CSS and Lucide icons on port 3001.
+- [x] Build POS Terminal UI (`client/components/pos/pos-terminal.tsx`):
+  - [x] Header with cashier badge, live digital clock, and shift stats (today's revenue, transactions count).
+  - [x] Left panel: Category button pills, live search bar (by name, SKU, barcode), and responsive product cards with stock badges.
+  - [x] Right panel: Sticky Cart drawer with quantity steppers (+ / -), discount input, tax rate, and total calculation.
+- [x] Barcode Scanner listener (captures scanner inputs ending with `Enter` and auto-adds to cart).
+- [x] User Feedback: Skeleton loaders, empty states, out-of-stock disable indicators, error toasts.
 
 #### [14:00 – 17:30] Phase 5: Cash Payment Modal & Receipt Generator
-- [ ] Cash Checkout Modal:
-  - Large total payable display.
-  - Quick Tender buttons (`Exact`, `$10`, `$20`, `$50`, `$100`).
-  - Real-time `Change Due` calculator.
-  - Prevents checkout if `amount_tendered < total`.
-- [ ] Printable Receipt:
-  - Clean thermal-receipt preview formatted for 80mm roll (`window.print()`).
-  - Itemized breakdown, invoice number, store header, tender, and change due.
+- [x] Cash Checkout Modal (`client/components/pos/cash-payment-modal.tsx`):
+  - [x] Large total payable display.
+  - [x] Quick Tender buttons (`Exact`, `$10`, `$20`, `$50`, `$100`, `$200`).
+  - [x] Real-time `Change Due` / shortage calculator.
+  - [x] Prevents checkout if `amountTendered < total`.
+- [x] Printable Receipt (`client/components/pos/receipt-modal.tsx`):
+  - [x] Clean thermal-receipt preview formatted for 80mm roll with dedicated `@media print` CSS (`window.print()`).
+  - [x] Itemized breakdown, invoice number, store header, tender, and change due.
 
 #### [18:30 – 21:30] Phase 6: AI Feature Integration (Gemini API)
 - [ ] Backend route: `POST /api/ai/sales-insights`.

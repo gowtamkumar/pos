@@ -13,14 +13,14 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    let initialTheme: Theme = 'dark';
+    let initialTheme: Theme = 'light';
     try {
-      const savedTheme = localStorage.getItem('lms_theme') as Theme | null;
+      const savedTheme = (localStorage.getItem('pos_theme') || localStorage.getItem('lms_theme')) as Theme | null;
       if (savedTheme === 'light' || savedTheme === 'dark') {
         initialTheme = savedTheme;
       } else {
@@ -47,6 +47,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     try {
+      localStorage.setItem('pos_theme', newTheme);
       localStorage.setItem('lms_theme', newTheme);
     } catch (e) {}
     document.documentElement.setAttribute('data-theme', newTheme);

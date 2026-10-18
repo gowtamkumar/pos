@@ -139,4 +139,34 @@ body {
   border-color: #e2e8f0;
 }
 
+/* Print styles for 80mm thermal receipt roll */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #thermal-receipt,
+  #thermal-receipt * {
+    visibility: visible;
+  }
+  #thermal-receipt {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 auto !important;
+    padding: 8px !important;
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
 
