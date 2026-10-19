@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
 import { Sale } from '@/types/pos';
-import { CheckCircle2, Printer, X, ShoppingBag } from 'lucide-react';
+import { CheckCircle2, Printer, ShoppingBag, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
 
 interface ReceiptModalProps {
   sale: Sale | null;
@@ -11,7 +11,7 @@ interface ReceiptModalProps {
 }
 
 export function ReceiptModal({ sale, isOpen, onClose }: ReceiptModalProps) {
-  if (!isOpen || !sale) return null;
+  if (!isOpen || !sale || typeof document === 'undefined') return null;
 
   const handlePrint = () => {
     window.print();
@@ -22,8 +22,9 @@ export function ReceiptModal({ sale, isOpen, onClose }: ReceiptModalProps) {
     timeStyle: 'short',
   });
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+  // Keep the receipt outside the POS layout so its containers cannot clip the printout.
+  return createPortal(
+    <div id="receipt-print-root" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="relative w-full max-w-md bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Modal Actions Header (Hidden in Print) */}
         <div className="no-print flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
@@ -87,7 +88,7 @@ export function ReceiptModal({ sale, isOpen, onClose }: ReceiptModalProps) {
 
             <div className="space-y-2">
               {sale.items.map((item) => (
-                <div key={item.id} className="flex justify-between text-[11px] leading-tight">
+                <div key={item.id} className="receipt-item flex justify-between text-[11px] leading-tight">
                   <div className="w-1/2 truncate pr-1">
                     <p className="font-medium text-slate-900 truncate">{item.productName}</p>
                     <p className="text-[9px] text-slate-400">{item.productSku}</p>
@@ -159,10 +160,10 @@ export function ReceiptModal({ sale, isOpen, onClose }: ReceiptModalProps) {
         </div>
 
         {/* Modal Action Buttons (Hidden in Print) */}
-        <div className="no-print p-4 bg-slate-50 border-t border-slate-200 flex items-center gap-3">
+        <div className="no-print p-4 bg-muted border-t border-card-border flex items-center gap-3">
           <button
             onClick={handlePrint}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs flex items-center justify-center gap-2 transition-colors shadow-sm"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-hover text-white font-medium text-xs flex items-center justify-center gap-2 transition-colors shadow-sm cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-muted"
           >
             <Printer className="w-4 h-4" />
             <span>Print Receipt</span>
@@ -176,7 +177,8 @@ export function ReceiptModal({ sale, isOpen, onClose }: ReceiptModalProps) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

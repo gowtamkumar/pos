@@ -9,6 +9,7 @@ import { CashPaymentModal } from './cash-payment-modal';
 import { ReceiptModal } from './receipt-modal';
 import { AddCategoryModal } from './add-category-modal';
 import { AddProductModal } from './add-product-modal';
+import { AiInsightsModal } from './ai-insights-modal';
 import { ThemeToggle } from '../theme-toggle';
 import {
   Search,
@@ -53,8 +54,13 @@ export function PosTerminal() {
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState<boolean>(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState<boolean>(false);
   const [isAddProductOpen, setIsAddProductOpen] = useState<boolean>(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
 
   const isAdmin = Boolean(user?.roles?.includes('Admin'));
+
+  const lowStockCount = useMemo(() => {
+    return products.filter((p) => p.stockQuantity <= p.lowStockThreshold).length;
+  }, [products]);
 
   // Live Clock
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -311,10 +317,34 @@ export function PosTerminal() {
               </div>
             </div>
           )}
+
+          {/* AI Copilot Badge Button */}
+          <button
+            onClick={() => setIsAiModalOpen(true)}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer relative group"
+            title="Open AI Sales Copilot & Restock Forecast"
+          >
+            <Sparkles className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
+            <span>AI Copilot</span>
+            {lowStockCount > 0 && (
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -right-1 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
+            )}
+          </button>
         </div>
 
-        {/* Right Controls: Theme Toggle, Refresh, Cashier Badge & Actions */}
+        {/* Right Controls: AI Copilot (mobile), Theme Toggle, Refresh, Cashier Badge & Actions */}
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setIsAiModalOpen(true)}
+            className="sm:hidden p-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white transition-all shadow-md cursor-pointer relative"
+            title="Open AI Sales Copilot"
+          >
+            <Sparkles className="w-4 h-4" />
+            {lowStockCount > 0 && (
+              <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-0.5 -right-0.5 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
+            )}
+          </button>
+
           <ThemeToggle />
 
           <button
@@ -719,6 +749,11 @@ export function PosTerminal() {
         onClose={() => setIsAddProductOpen(false)}
         categories={categories}
         onProductCreated={handleProductCreated}
+      />
+
+      <AiInsightsModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
       />
     </div>
   );

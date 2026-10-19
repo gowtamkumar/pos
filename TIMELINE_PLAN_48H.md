@@ -161,13 +161,15 @@ sale_items (
   - [x] Itemized breakdown, invoice number, store header, tender, and change due.
 
 #### [18:30 – 21:30] Phase 6: AI Feature Integration (Gemini API)
-- [ ] Backend route: `POST /api/ai/sales-insights`.
-- [ ] Fetch current low-stock products and sales totals $\rightarrow$ Prompt Google Gemini API.
-- [ ] AI generates:
-  - Top-selling trends.
-  - Urgent restock alerts for items near zero.
-  - Actionable advice for the store manager.
-- [ ] Frontend AI Insights Modal with 1-click generation and markdown display.
+- [x] Backend routes: `GET /api/v1/ai/sales-insights` and `POST /api/v1/ai/sales-insights`.
+- [x] Fetch current low-stock products and sales totals $\rightarrow$ Prompt Google Gemini API (gemini-1.5-flash).
+- [x] Built-in Deterministic Heuristic Fallback Engine ensuring 100% demo uptime without external key dependency.
+- [x] AI generates:
+  - [x] Executive Shift Summary & Inventory Health Score.
+  - [x] Top-selling velocity movers with revenue contribution percentages.
+  - [x] Urgent restock alerts for items near zero with recommended order quantities.
+  - [x] Actionable store operation recommendations checklist.
+- [x] Frontend AI Copilot Modal (`client/components/pos/ai-insights-modal.tsx`) with pulse alert and 1-click clipboard export.
 
 #### [21:30 – 23:30] Phase 7: Automated Unit Tests
 - [ ] 3-4 Unit tests (Vitest):

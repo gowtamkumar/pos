@@ -88,3 +88,35 @@ export interface CheckoutPayload {
   notes?: string;
 }
 
+export interface AiRestockItem {
+  productName: string;
+  sku: string;
+  currentStock: number;
+  threshold: number;
+  recommendedOrderQty: number;
+  urgency: 'CRITICAL' | 'HIGH' | 'MODERATE';
+  reasoning: string;
+}
+
+export interface AiTopPerformer {
+  productName: string;
+  sku: string;
+  quantitySold: number;
+  revenue: number;
+  contributionPercent: number;
+  insight: string;
+}
+
+export interface AiSalesInsightResponse {
+  executiveSummary: string;
+  inventoryHealthScore: number;
+  totalRevenue: number;
+  totalTransactions: number;
+  averageOrderValue: number;
+  urgentRestock: AiRestockItem[];
+  topPerformers: AiTopPerformer[];
+  actionableRecommendations: string[];
+  generatedAt: string;
+  engine: string;
+}
+

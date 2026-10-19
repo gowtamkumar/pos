@@ -141,30 +141,61 @@ body {
 
 /* Print styles for 80mm thermal receipt roll */
 @media print {
-  body {
+  body:has(#receipt-print-root) {
     background: white !important;
     color: black !important;
+    margin: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
   }
-  body * {
-    visibility: hidden;
+  /* Remove the POS layout entirely so it cannot create blank printed pages. */
+  body:has(#receipt-print-root) > :not(#receipt-print-root) {
+    display: none !important;
   }
-  #thermal-receipt,
-  #thermal-receipt * {
-    visibility: visible;
+  #receipt-print-root {
+    position: static !important;
+    display: block !important;
+    width: 80mm !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    animation: none !important;
+  }
+  #receipt-print-root > div {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
   #thermal-receipt {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 80mm !important;
-    max-width: 80mm !important;
-    margin: 0 auto !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
     padding: 8px !important;
     background: white !important;
     color: black !important;
     box-shadow: none !important;
   }
-  .no-print {
+  #thermal-receipt * {
+    color: black !important;
+  }
+  #thermal-receipt .truncate {
+    overflow: visible !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+  }
+  #thermal-receipt .receipt-item {
+    break-inside: avoid;
+  }
+  #receipt-print-root .no-print {
     display: none !important;
   }
 }

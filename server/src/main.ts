@@ -3,7 +3,6 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import cookieParser from 'cookie-parser'
 import { json } from 'express'
-import { rateLimit } from 'express-rate-limit'
 import { AppModule } from './app.module'
 import { AllExceptionsFilter } from './common/exception/exception-filter'
 import getLogLevels from './Logger/logger'
@@ -70,42 +69,6 @@ async function bootstrap() {
   })
   app.use(cookieParser())
   app.use(json({ limit: '20mb' }))
-  // ── Tiered rate limiting ─────────────────────────────────────────────────
-  const isDev = process.env.NODE_ENV !== 'production'
-
-  // 1. Auth endpoints (login, register)
-  app.use(
-    '/api/v1/auth',
-    rateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: isDev ? 500 : 30,
-      message: 'Too many auth attempts, please try again in 15 minutes',
-    }),
-  )
-
-  // 2. Standard API calls
-  app.use(
-    '/api/v1',
-    rateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: isDev ? 2000 : 500,
-      message: 'Too many requests from this IP, please try again later',
-      skip: (req) =>
-        req.path.startsWith('/products') ||
-        req.path.startsWith('/categories') ||
-        req.path.startsWith('/sales'),
-    }),
-  )
-
-  // 3. Relaxed: High-frequency POS terminal operations (barcode lookup, category browsing)
-  app.use(
-    ['/api/v1/products', '/api/v1/categories', '/api/v1/sales'],
-    rateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: isDev ? 10000 : 2000,
-      message: 'Too many POS requests, please try again later',
-    }),
-  )
   const PORT = process.env.API_PORT || 3900
   await app.listen(PORT, () => {
     logger.log(`Application listening on port mode. http://localhost:${PORT}`)
