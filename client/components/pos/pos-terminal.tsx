@@ -63,6 +63,7 @@ export function PosTerminal() {
   }, [products]);
 
   // Live Clock
+  const [currentDate, setCurrentDate] = useState<string>('');
   const [currentTime, setCurrentTime] = useState<string>('');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,12 +71,16 @@ export function PosTerminal() {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setCurrentTime(
+      setCurrentDate(
         now.toLocaleDateString('en-US', {
           weekday: 'short',
           month: 'short',
           day: 'numeric',
           year: 'numeric',
+        })
+      );
+      setCurrentTime(
+        now.toLocaleTimeString('en-US', {
           hour: '2-digit',
           minute: '2-digit',
           second: '2-digit',
@@ -286,19 +291,20 @@ export function PosTerminal() {
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans select-none transition-colors duration-200">
       {/* ── TOP HEADER / SHIFT BAR ── */}
-      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur px-6 py-3 flex items-center justify-between no-print sticky top-0 z-30 shadow-sm dark:shadow-md transition-colors">
+      <header className="border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between no-print sticky top-0 z-30 shadow-sm dark:shadow-md transition-colors gap-2">
         {/* Brand & Live Digital Clock */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30">
-              <ShoppingBag className="w-5 h-5" />
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-indigo-50 dark:bg-indigo-600/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 shrink-0">
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h1 className="font-bold text-sm tracking-tight text-slate-900 dark:text-white leading-tight">
-                Retail POS Terminal
+            <div className="min-w-0">
+              <h1 className="font-bold text-xs sm:text-sm tracking-tight text-slate-900 dark:text-white leading-tight truncate">
+                Retail POS<span className="hidden sm:inline"> Terminal</span>
               </h1>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1.5">
-                <Clock className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+              <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-mono flex items-center gap-1 sm:gap-1.5 whitespace-nowrap">
+                <Clock className="w-3 h-3 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                <span className="hidden md:inline">{currentDate} • </span>
                 <span>{currentTime || 'Loading clock...'}</span>
               </p>
             </div>
@@ -306,7 +312,7 @@ export function PosTerminal() {
 
           {/* Shift Revenue Badge */}
           {dailySummary && (
-            <div className="hidden md:flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+            <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800 shrink-0">
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
                 <DollarSign className="w-3.5 h-3.5" />
                 <span>Today: ${Number(dailySummary.totalRevenue).toFixed(2)}</span>
@@ -317,31 +323,19 @@ export function PosTerminal() {
               </div>
             </div>
           )}
-
-          {/* AI Copilot Badge Button */}
-          <button
-            onClick={() => setIsAiModalOpen(true)}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer relative group"
-            title="Open AI Sales Copilot & Restock Forecast"
-          >
-            <Sparkles className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
-            <span>AI Copilot</span>
-            {lowStockCount > 0 && (
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -right-1 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
-            )}
-          </button>
         </div>
 
-        {/* Right Controls: AI Copilot (mobile), Theme Toggle, Refresh, Cashier Badge & Actions */}
-        <div className="flex items-center gap-2.5">
+        {/* Right Controls: AI Copilot, Theme Toggle, Refresh, Cashier Badge & Actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <button
             onClick={() => setIsAiModalOpen(true)}
-            className="sm:hidden p-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white transition-all shadow-md cursor-pointer relative"
-            title="Open AI Sales Copilot"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer relative group shrink-0"
+            title="Open AI Sales Copilot & Restock Forecast"
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform shrink-0" />
+            <span className="hidden sm:inline">AI Copilot</span>
             {lowStockCount > 0 && (
-              <span className="w-2 h-2 rounded-full bg-amber-400 absolute -top-0.5 -right-0.5 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
+              <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 absolute -top-1 -right-1 ring-2 ring-white dark:ring-slate-900 animate-pulse" />
             )}
           </button>
 
@@ -350,17 +344,17 @@ export function PosTerminal() {
           <button
             onClick={() => fetchData()}
             title="Refresh Catalog"
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
 
           {user && (
-            <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60">
-              <div className="w-7 h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+            <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 shrink-0">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
                 {user.name.charAt(0).toUpperCase()}
               </div>
-              <div className="text-left leading-tight hidden sm:block">
+              <div className="text-left leading-tight hidden xl:block">
                 <p className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[120px]">{user.name}</p>
                 <p className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold">
                   {user.roles?.includes('Admin') ? 'Store Admin' : 'Cashier'}
@@ -372,7 +366,7 @@ export function PosTerminal() {
           <button
             onClick={() => logout()}
             title="Sign Out"
-            className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-900/40 text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-900/40 text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0"
           >
             <LogOut className="w-4 h-4" />
           </button>
